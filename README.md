@@ -1,22 +1,28 @@
 # SVG Path Extractor
 
-A powerful, dependency-free JavaScript library for extracting points along SVG paths with configurable density. Perfect for converting SVG graphics into arrays of coordinate points for use in animations, data visualization, or drawing applications.
+A powerful, dependency-free JavaScript library for extracting points along SVG paths with configurable density and vertex preservation. Perfect for converting SVG graphics into arrays of coordinate points for use in animations, data visualization, or drawing applications.
 
 ## ✨ Features
 
 - 🎯 **Extract points from any SVG element**: paths, lines, circles, rectangles, ellipses, polygons, and polylines
 - ⚙️ **Configurable point density**: Control the spacing between extracted points
+- 🔒 **Vertex preservation**: Guarantees that all corners and vertices are included in results
+- 📊 **Element metadata**: Extract points with information about source elements
+- 🧮 **Utility methods**: Built-in bounding box, length, and center calculations
+- 📏 **Coordinate normalization**: Scale results to specific dimensions
 - 🌐 **Universal compatibility**: Works in both Node.js and browser environments
 - 🔧 **Zero dependencies**: No external libraries required for core functionality
 - 📝 **TypeScript support**: Full type definitions included
 - 🛡️ **Robust error handling**: Graceful handling of malformed SVG content
 - 🎨 **Transform support**: Basic support for SVG transforms
 
-## 📦 Installation
+## 📥 Installation
 
-```bash
-npm install svg-path-extractor
-```
+Currently available as a standalone file. Download `svg-path-extractor.js` from this repository.
+
+**Future releases will be available on:**
+- NPM: `npm install svg-path-extractor` *(coming soon)*
+- CDN: `<script src="https://cdn.example.com/svg-path-extractor.js"></script>` *(coming soon)*
 
 ## 🚀 Quick Start
 
@@ -25,7 +31,7 @@ npm install svg-path-extractor
 ```html
 <script src="svg-path-extractor.js"></script>
 <script>
-  const extractor = new SVGPathExtractor();
+  const extractor = new SVGPathExtractor({ pointDensity: 8 });
   
   const svgContent = `
     <svg width="100" height="100" viewBox="0 0 100 100">
@@ -33,7 +39,7 @@ npm install svg-path-extractor
     </svg>
   `;
   
-  extractor.extractPoints(svgContent, 5).then(paths => {
+  extractor.extractPoints(svgContent).then(paths => {
     console.log('Extracted paths:', paths);
     // paths[0] = [{ x: 80, y: 50 }, { x: 79.3, y: 53.9 }, ...]
   });
@@ -43,30 +49,31 @@ npm install svg-path-extractor
 ### Node.js Usage
 
 ```javascript
-const SVGPathExtractor = require('svg-path-extractor');
+const SVGPathExtractor = require('./svg-path-extractor.js');
 
 const extractor = new SVGPathExtractor({
-  pointDensity: 5,  // 5 units between points
-  densityFactor: 0.01
+  pointDensity: 5,        // 5 units between points
+  densityFactor: 0.0075,  // Auto-density factor
+  closePaths: false       // Don't close paths by default
 });
 
 // From string
 const svgContent = `...your SVG content...`;
 const paths = await extractor.extractPoints(svgContent);
 
-// From file
+// From file (Node.js only)
 const paths = await extractor.extractPointsFromFile('./path/to/file.svg');
 
 console.log(`Extracted ${paths.length} paths with ${paths[0]?.length} points each`);
 ```
 
-### ES6 Modules
+### ES6 Modules (when available)
 
 ```javascript
-import SVGPathExtractor from 'svg-path-extractor';
+import SVGPathExtractor from './svg-path-extractor.js';
 
 const extractor = new SVGPathExtractor();
-const paths = await extractor.extractPoints(svgContent, 10);
+const paths = await extractor.extractPoints(svgContent);
 ```
 
 ## 📖 API Reference
@@ -83,9 +90,13 @@ new SVGPathExtractor(options?)
 |--------|------|---------|-------------|
 | `pointDensity` | `number \| null` | `null` | Fixed distance between points. If `null`, automatically calculated |
 | `densityFactor` | `number` | `0.0075` | Factor for automatic density calculation |
-| `maxPoints` | `number` | `10000` | Maximum points per path (safety limit) |
+| `maxPoints` | `number` | `1000000` | Maximum points per path (safety limit) |
+| `includeOnly` | `string[] \| null` | `null` | Only process specific element types |
+| `excludeElements` | `string[]` | `[]` | Exclude specific element types |
+| `normalizeToSize` | `{width: number, height: number} \| null` | `null` | Normalize all paths to specific dimensions |
+| `closePaths` | `boolean` | `false` | Close closed shapes by duplicating first point at end |
 
-### Methods
+### Core Methods
 
 #### `extractPoints(svgContent, pointDensity?)`
 
@@ -96,6 +107,15 @@ Extracts points from SVG content string.
   - `pointDensity` (number, optional): Override density for this extraction
 - **Returns:** `Promise<Array<Array<{x: number, y: number}>>>`
 
+#### `extractPointsWithMetadata(svgContent, pointDensity?)`
+
+Extracts points with metadata about source elements.
+
+- **Parameters:**
+  - `svgContent` (string): SVG markup as string  
+  - `pointDensity` (number, optional): Override density for this extraction
+- **Returns:** `Promise<Array<{points: Point[], element: string, id?: string, className?: string, attributes: object}>>`
+
 #### `extractPointsFromFile(filePath, pointDensity?)` 
 
 *Node.js only* - Extracts points from SVG file.
@@ -105,17 +125,42 @@ Extracts points from SVG content string.
   - `pointDensity` (number, optional): Override density for this extraction
 - **Returns:** `Promise<Array<Array<{x: number, y: number}>>>`
 
+### Utility Methods
+
+#### `getBoundingBox(paths)`
+
+Calculate bounding box of all paths.
+
+- **Parameters:** `paths` (Array<Array<{x: number, y: number}>>)
+- **Returns:** `{x: number, y: number, width: number, height: number}`
+
+#### `getTotalLength(paths)`
+
+Calculate total length of all paths.
+
+- **Parameters:** `paths` (Array<Array<{x: number, y: number}>>)  
+- **Returns:** `number`
+
+#### `getCenter(paths)`
+
+Calculate center point (centroid) of all paths.
+
+- **Parameters:** `paths` (Array<Array<{x: number, y: number}>>)
+- **Returns:** `{x: number, y: number}`
+
 ## 🎨 Supported SVG Elements
 
-| Element | Support | Notes |
-|---------|---------|-------|
-| `<path>` | ✅ Full | Uses browser's native `getPointAtLength()` when available |
-| `<line>` | ✅ Full | Linear interpolation |
-| `<circle>` | ✅ Full | Parametric circle generation |
-| `<rect>` | ✅ Full | Perimeter tracing with transform support |
-| `<ellipse>` | ✅ Full | Parametric ellipse with transform support |
-| `<polygon>` | ✅ Full | Linear interpolation between vertices |
-| `<polyline>` | ✅ Full | Linear interpolation between points |
+| Element | Support | Vertex Preservation | Notes |
+|---------|---------|-------|-------|
+| `<path>` | ✅ Full | ✅ Yes | Custom parser with Bézier curve support |
+| `<line>` | ✅ Full | ✅ Yes | Linear interpolation with endpoints |
+| `<circle>` | ✅ Full | N/A | Parametric circle generation |
+| `<rect>` | ✅ Full | ✅ Yes | Perimeter tracing with exact corners |
+| `<ellipse>` | ✅ Full | N/A | Parametric ellipse generation |
+| `<polygon>` | ✅ Full | ✅ Yes | All vertices guaranteed in output |
+| `<polyline>` | ✅ Full | ✅ Yes | All vertices guaranteed in output |
+| `<image>` | ⏭️ Ignored | N/A | Raster images are skipped |
+| `<text>` | ⏭️ Ignored | N/A | Text elements are skipped |
 
 ## 💡 Examples
 
@@ -136,17 +181,62 @@ console.log(`Circle: ${paths[0].length} points`);
 console.log(`Rectangle: ${paths[1].length} points`);
 ```
 
-### Complex Path Extraction
+### Extract with Metadata
 
 ```javascript
-const svg = `
-  <svg viewBox="0 0 100 100">
-    <path d="M 10 10 C 20 20, 40 20, 50 10 S 80 0, 90 10" />
-  </svg>
-`;
+const pathsWithMetadata = await extractor.extractPointsWithMetadata(svg);
 
-const paths = await extractor.extractPoints(svg, 3);
-// Returns smooth curve points with 3 units spacing
+pathsWithMetadata.forEach(pathData => {
+  console.log(`Element: ${pathData.element}`);
+  console.log(`ID: ${pathData.id || 'none'}`);
+  console.log(`Points: ${pathData.points.length}`);
+  console.log(`Attributes:`, pathData.attributes);
+});
+```
+
+### Utility Functions
+
+```javascript
+const paths = await extractor.extractPoints(svg);
+
+// Get bounding box
+const bbox = extractor.getBoundingBox(paths);
+console.log(`Size: ${bbox.width} x ${bbox.height}`);
+
+// Get total length
+const totalLength = extractor.getTotalLength(paths);
+console.log(`Total length: ${totalLength.toFixed(2)} units`);
+
+// Get center point
+const center = extractor.getCenter(paths);
+console.log(`Center: (${center.x}, ${center.y})`);
+```
+
+### Advanced Configuration
+
+```javascript
+const extractor = new SVGPathExtractor({
+  pointDensity: 5,
+  includeOnly: ['rect', 'circle'],           // Only process rectangles and circles
+  normalizeToSize: { width: 100, height: 100 }, // Scale to 100x100
+  closePaths: true                            // Close closed shapes
+});
+
+const paths = await extractor.extractPoints(svg);
+```
+
+### Filter Elements
+
+```javascript
+// Only process specific elements
+const extractor = new SVGPathExtractor({
+  includeOnly: ['path', 'polygon']
+});
+
+// Or exclude specific elements  
+const extractor2 = new SVGPathExtractor({
+  excludeElements: ['text', 'image']
+});
 ```
 
 ### Drawing with Canvas
@@ -155,7 +245,7 @@ const paths = await extractor.extractPoints(svg, 3);
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const paths = await extractor.extractPoints(svgContent, 5);
+const paths = await extractor.extractPoints(svgContent);
 
 paths.forEach(path => {
   ctx.beginPath();
@@ -170,29 +260,12 @@ paths.forEach(path => {
 });
 ```
 
-### Animation Points
-
-```javascript
-const paths = await extractor.extractPoints(svgContent, 2);
-const allPoints = paths.flat();
-
-// Animate through points
-let currentIndex = 0;
-function animate() {
-  const point = allPoints[currentIndex];
-  // Move your object to point.x, point.y
-  currentIndex = (currentIndex + 1) % allPoints.length;
-  requestAnimationFrame(animate);
-}
-animate();
-```
-
 ## 🎛️ Point Density Guide
 
 Point density determines the spacing between extracted points:
 
 - **Low density (20-50)**: Fewer points, good for simple shapes or performance
-- **Medium density (5-15)**: Balanced detail and performance
+- **Medium density (5-15)**: Balanced detail and performance  
 - **High density (1-3)**: Maximum detail, good for complex curves
 - **Auto density**: Automatically calculated based on SVG size
 
@@ -204,63 +277,98 @@ const highDetail = await extractor.extractPoints(svg, 2);   // ~100 points
 const autoDetail = await extractor.extractPoints(svg);      // Auto-calculated
 ```
 
+## 🔒 Vertex Preservation
+
+The library guarantees that all critical vertices (corners, intersections) are included in the output:
+
+- **Rectangle corners**: All 4 corners are exactly preserved
+- **Polygon vertices**: All original vertices included regardless of density
+- **Path endpoints**: Start and end points of path segments
+- **Line endpoints**: Both ends of line elements
+
+```javascript
+// Even with low density, vertices are preserved
+const paths = await extractor.extractPoints(`
+  <polygon points="0,0 100,0 50,50" />
+`, 50); // Very low density
+
+// All 3 vertices (0,0), (100,0), (50,50) will be in the result
+```
+
 ## 🛠️ Node.js Setup
 
-For Node.js usage, install the optional XML parser dependency:
+For Node.js usage, optionally install XML parser dependency for better performance:
 
 ```bash
 npm install xmldom
 ```
 
-The library will automatically detect and use it for XML parsing in Node.js environments.
+The library will automatically detect and use it. If not available, it falls back to basic parsing.
 
 ## 🧪 Testing
 
-Run the test suite:
+The library includes comprehensive test files:
+
+- **`test-suite.js`**: Automated test suite (22 tests)
+- **`debug-text.html`**: Interactive visual testing
+- **`standalone-demo.html`**: Feature demonstration
+
+Run tests by opening HTML files in a browser or running Node.js tests:
 
 ```bash
-# Node.js tests
-npm test
-
-# Browser tests
-npm run test:browser
-# Then open test.html in your browser
+node test-suite.js
 ```
 
-## 🔧 Development
+## 🔧 Development Status
 
-```bash
-# Clone repository
-git clone https://github.com/yourusername/svg-path-extractor.git
-cd svg-path-extractor
+**Current Version:** 1.0.0 (Beta)  
+**Status:** Ready for production use, pending publication
 
-# Install dev dependencies (optional)
-npm install xmldom
-
-# Run tests
-npm test
-```
+### Planned Features
+- NPM package publication
+- CDN distribution
+- Additional transform support
+- Arc path support improvements
+- Performance optimizations
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+This is currently a standalone project. Contributions and feedback are welcome! 
+
+For bug reports or feature requests, please create an issue or contact the maintainer.
 
 ## 📄 License
 
 MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🔍 What's New
+
+### Recent Updates
+- **Vertex Preservation**: All corners and vertices are guaranteed in output
+- **Element Metadata**: Extract points with source element information  
+- **Utility Methods**: Built-in bounding box, length, and center calculations
+- **Coordinate Normalization**: Scale results to specific dimensions
+- **Path Closing**: Option to close closed shapes
+- **Enhanced Path Parser**: Support for cubic and quadratic Bézier curves
+- **Element Filtering**: Include/exclude specific element types
+
 ## 🐛 Known Limitations
 
-- Complex path commands (arcs, curves) fall back to basic parsing in Node.js
-- Transform support is basic (matrix and simple rotations only)
-- Very large SVGs may hit the `maxPoints` safety limit
+- Complex path arcs may have reduced precision in Node.js fallback mode
+- Transform support is basic (matrix and simple transforms only)
+- Very large SVGs may hit the `maxPoints` safety limit (configurable)
+- Some edge cases in complex nested transforms
 
-## 🔗 Related Projects
+## 🔗 Files in This Repository
 
-- [svg-path-parser](https://www.npmjs.com/package/svg-path-parser) - SVG path parsing
-- [paper.js](http://paperjs.org/) - Vector graphics scripting
-- [fabric.js](http://fabricjs.com/) - Canvas library with SVG support
+- **`svg-path-extractor.js`**: Main library file
+- **`index.d.ts`**: TypeScript definitions
+- **`test-suite.js`**: Automated tests
+- **`debug-text.html`**: Interactive testing page
+- **`standalone-demo.html`**: Feature demonstration
+- **`examples/`**: Usage examples
+- **`test-*.svg`**: Test SVG files
 
 ---
 
-Made with ❤️ by [Your Name](https://github.com/yourusername) 
+**Ready for production use** • **Vertex-preserving algorithm** • **Zero dependencies** • **Universal compatibility** 
