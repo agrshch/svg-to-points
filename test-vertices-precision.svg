@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+    <!-- Заголовок -->
+    <text x="200" y="20" text-anchor="middle" font-size="16" fill="#000">Тест сохранения вершин</text>
+    
+    <!-- Прямоугольник с четкими координатами -->
+    <rect x="50" y="50" width="100" height="60" fill="none" stroke="#e74c3c" stroke-width="2"/>
+    <text x="100" y="45" text-anchor="middle" font-size="12" fill="#e74c3c">Rect: (50,50)→(150,110)</text>
+    
+    <!-- Полигон треугольник -->
+    <polygon points="200,50 300,50 250,110" fill="none" stroke="#2ecc71" stroke-width="2"/>
+    <text x="250" y="45" text-anchor="middle" font-size="12" fill="#2ecc71">Triangle: (200,50) (300,50) (250,110)</text>
+    
+    <!-- Полигон квадрат -->
+    <polygon points="50,150 150,150 150,200 50,200" fill="none" stroke="#3498db" stroke-width="2"/>
+    <text x="100" y="145" text-anchor="middle" font-size="12" fill="#3498db">Square: 4 углa</text>
+    
+    <!-- Полилиния зигзаг -->
+    <polyline points="200,150 250,130 300,150 350,130" fill="none" stroke="#9b59b6" stroke-width="2"/>
+    <text x="275" y="145" text-anchor="middle" font-size="12" fill="#9b59b6">Polyline: 4 точки</text>
+    
+    <!-- Сложный полигон -->
+    <polygon points="100,250 150,220 200,250 180,280 120,280" fill="none" stroke="#f39c12" stroke-width="2"/>
+    <text x="150" y="215" text-anchor="middle" font-size="12" fill="#f39c12">Pentagon: 5 углов</text>
+    
+    <!-- Замкнутый path -->
+    <path d="M 250 220 L 300 220 L 325 260 L 275 280 L 225 260 Z" fill="none" stroke="#e67e22" stroke-width="2"/>
+    <text x="275" y="215" text-anchor="middle" font-size="12" fill="#e67e22">Closed Path</text>
+    
+    <!-- Разомкнутый path -->
+    <path d="M 50 280 L 100 260 L 150 280 L 200 260" fill="none" stroke="#34495e" stroke-width="2"/>
+    <text x="125" y="255" text-anchor="middle" font-size="12" fill="#34495e">Open Path</text>
+</svg> 

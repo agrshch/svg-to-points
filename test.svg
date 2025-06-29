@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simple path -->
+  <path d="M 10 10 L 50 50 L 90 10 Z" fill="none" stroke="black"/>
+  
+  <!-- Circle -->
+  <circle cx="100" cy="100" r="30" fill="none" stroke="red"/>
+  
+  <!-- Rectangle -->
+  <rect x="10" y="120" width="60" height="40" fill="none" stroke="blue"/>
+  
+  <!-- Line -->
+  <line x1="150" y1="20" x2="190" y2="60" stroke="green"/>
+  
+  <!-- Ellipse -->
+  <ellipse cx="150" cy="150" rx="25" ry="15" fill="none" stroke="purple"/>
+  
+  <!-- Polygon -->
+  <polygon points="120,160 140,180 160,160 150,140 130,140" fill="none" stroke="orange"/>
+</svg> 

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Path Extractor - Standalone Demo</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .demo-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .svg-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .svg-display {
+            flex: 0 0 200px;
+            height: 150px;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .points-display {
+            flex: 1;
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background: white;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .controls {
+            margin: 15px 0;
+        }
+        .controls input {
+            margin: 0 10px;
+            padding: 4px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .canvas-container {
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            display: inline-block;
+        }
+        .visualization-controls {
+            margin: 10px 0;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+        .visualization-controls label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .point-size-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .point-size-control input[type="range"] {
+            width: 80px;
+        }
+        .file-canvas-container {
+            margin: 15px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 SVG Path Extractor - Standalone Demo</h1>
+    <p>Демонстрация библиотеки без зависимостей. Просто подключите один файл!</p>
+
+    <div class="highlight">
+        <strong>✅ Готово к использованию:</strong> Скопируйте <code>svg-path-extractor.js</code> или <code>svg-path-extractor.min.js</code> в свой проект
+        <br><strong>🎨 Новые возможности:</strong> Визуализация извлеченных точек и линий с настраиваемыми параметрами
+    </div>
+
+    <!-- Демо 1: Простое использование -->
+    <div class="demo-section">
+        <h2>🔹 Демо 1: Базовое извлечение точек</h2>
+        
+        <div class="svg-container">
+            <div class="svg-display">
+                <svg width="150" height="100" viewBox="0 0 150 100">
+                    <circle cx="75" cy="50" r="30" fill="none" stroke="#e74c3c" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="points-display" id="demo1-output">
+                Нажмите кнопку для извлечения точек...
+            </div>
+        </div>
+
+        <div class="controls">
+            <label>Плотность точек:</label>
+            <input type="range" id="density1" min="2" max="20" value="8">
+            <span id="density1-value">8</span>
+            <button onclick="runDemo1()">Извлечь точки</button>
+        </div>
+
+        <p><strong>Код:</strong></p>
+        <pre><code>const extractor = new SVGPathExtractor({ pointDensity: 8 });
+const paths = await extractor.extractPoints(svgContent);
+console.log(`Получено ${paths[0].length} точек`);</code></pre>
+    </div>
+
+    <!-- Демо 2: Сложные формы -->
+    <div class="demo-section">
+        <h2>🔹 Демо 2: Сложные формы и анимация</h2>
+        
+        <div class="svg-container">
+            <div class="svg-display">
+                <svg width="150" height="100" viewBox="0 0 150 100">
+                    <path d="M 20 50 Q 50 20 80 50 T 130 50" fill="none" stroke="#9b59b6" stroke-width="3"/>
+                    <polygon points="10,80 40,80 25,95" fill="none" stroke="#2ecc71" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="canvas-container">
+                <canvas id="demo2-canvas" width="500" height="300"></canvas>
+            </div>
+        </div>
+
+        <div class="visualization-controls">
+            <label>
+                <input type="checkbox" id="show-lines-2" checked> Показать линии
+            </label>
+            <label>
+                <input type="checkbox" id="show-points-2" checked> Показать точки
+            </label>
+            <label>
+                <input type="checkbox" id="close-paths-2"> Замыкать фигуры
+            </label>
+            <div class="point-size-control">
+                <label>Размер точек:</label>
+                <input type="range" id="point-size-2" min="1" max="6" value="2">
+                <span id="point-size-value-2">2</span>px
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="runDemo2()">🎬 Анимация</button>
+            <button onclick="drawDemo2Static()">📊 Статично</button>
+            <button onclick="clearDemo2()">🧹 Очистить</button>
+        </div>
+    </div>
+
+    <!-- Демо 3: SVG с изображениями -->
+    <div class="demo-section">
+        <h2>🔹 Демо 3: SVG с растровыми изображениями</h2>
+        <p><small>Демонстрирует, что изображения корректно игнорируются</small></p>
+        
+        <div class="svg-container">
+            <div class="svg-display">
+                <svg width="150" height="100" viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <!-- Растровое изображение (игнорируется) -->
+                    <image x="10" y="10" width="30" height="30" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="/>
+                    
+                    <!-- Обрабатываемые элементы -->
+                    <circle cx="75" cy="30" r="15" fill="none" stroke="#e74c3c" stroke-width="2"/>
+                    <rect x="50" y="60" width="50" height="25" fill="none" stroke="#3498db" stroke-width="2"/>
+                    
+                    <!-- Текст тоже игнорируется -->
+                    <text x="75" y="95" text-anchor="middle" font-size="8">Текст игнорируется</text>
+                </svg>
+            </div>
+            <div class="points-display" id="demo3-output">
+                Нажмите кнопку для проверки...
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="runDemo3()">Извлечь точки (игнорируя изображения)</button>
+        </div>
+
+        <p><strong>Что происходит:</strong></p>
+        <ul>
+            <li>✅ <code>&lt;circle&gt;</code> и <code>&lt;rect&gt;</code> обрабатываются</li>
+            <li>🚫 <code>&lt;image&gt;</code> и <code>&lt;text&gt;</code> игнорируются</li>
+            <li>✅ Библиотека не ломается при наличии неподдерживаемых элементов</li>
+        </ul>
+    </div>
+
+    <!-- Демо 4: Загрузка файла -->
+    <div class="demo-section">
+        <h2>🔹 Демо 4: Загрузка SVG файла</h2>
+        
+        <div class="controls">
+            <input type="file" id="svg-file" accept=".svg" onchange="loadSVGFile()">
+        </div>
+        
+                 <div class="visualization-controls" id="file-viz-controls" style="display: none;">
+            <label>
+                <input type="checkbox" id="show-lines-file" checked> Показать линии
+            </label>
+            <label>
+                <input type="checkbox" id="show-points-file" checked> Показать точки
+            </label>
+            <label>
+                <input type="checkbox" id="close-paths-file"> Замыкать фигуры
+            </label>
+            <div class="point-size-control">
+                <label>Размер точек:</label>
+                <input type="range" id="point-size-file" min="1" max="8" value="3">
+                <span id="point-size-value-file">3</span>px
+            </div>
+            <label>Плотность:</label>
+            <input type="range" id="density-file" min="2" max="15" value="8">
+            <span id="density-file-value">8</span>
+        </div>
+        
+        <div class="file-canvas-container">
+            <canvas id="file-canvas" width="600" height="450" style="display: none;"></canvas>
+        </div>
+        
+        <div id="file-result" style="margin-top: 15px;">
+            Выберите SVG файл для анализа...
+        </div>
+    </div>
+
+    <!-- Инструкции по подключению -->
+    <div class="demo-section">
+        <h2>📋 Как использовать в своём проекте</h2>
+        
+        <h3>Вариант 1: Подключение файла напрямую</h3>
+        <pre><code>&lt;script src="svg-path-extractor.js">&lt;/script>
+&lt;script>
+  const extractor = new SVGPathExtractor();
+  
+  // Из строки
+  const paths = await extractor.extractPoints(svgContent, 5);
+  
+  // Обработка результата
+  paths.forEach((path, pathIndex) => {
+    console.log(`Путь ${pathIndex}: ${path.length} точек`);
+    path.forEach(point => {
+      console.log(`Точка: x=${point.x}, y=${point.y}`);
+    });
+  });
+&lt;/script></code></pre>
+
+        <h3>Вариант 2: CDN подключение (когда будет опубликовано)</h3>
+        <pre><code>&lt;script src="https://cdn.jsdelivr.net/gh/yourusername/svg-path-extractor@main/svg-path-extractor.min.js">&lt;/script></code></pre>
+
+        <h3>Вариант 3: ES6 модули (современные браузеры)</h3>
+        <pre><code>&lt;script type="module">
+  import SVGPathExtractor from './svg-path-extractor.js';
+  const extractor = new SVGPathExtractor();
+&lt;/script></code></pre>
+    </div>
+
+    <!-- Справка по визуализации -->
+    <div class="demo-section">
+        <h2>🎨 Новые возможности визуализации</h2>
+        
+        <p>В демо-версии теперь доступны:</p>
+        <ul>
+            <li><strong>Визуализация точек</strong> - посмотреть на сами извлеченные точки</li>
+            <li><strong>Визуализация линий</strong> - соединения между точками</li>
+            <li><strong>Настройки размера точек</strong> - от 1px до 8px</li>
+            <li><strong>Анимация</strong> - постепенная прорисовка путей</li>
+            <li><strong>Интерактивные настройки</strong> - изменение параметров в реальном времени</li>
+            <li><strong>Поддержка загрузки файлов</strong> - визуализация любых SVG файлов</li>
+            <li><strong>Гарантированное сохранение вершин</strong> - все углы полигонов всегда сохраняются</li>
+            <li><strong>Опциональное замыкание</strong> - замкнутые фигуры могут дублировать первую точку в конце</li>
+        </ul>
+        
+        <p><strong>💡 Совет:</strong> Попробуйте загрузить свой SVG файл и поэкспериментировать с настройками плотности и визуализации!</p>
+    </div>
+
+    <!-- Подключаем библиотеку -->
+    <script src="svg-path-extractor.js"></script>
+    
+    <script>
+        // Демо 1: Базовое извлечение
+        async function runDemo1() {
+            const svgContent = `<svg viewBox="0 0 150 100">
+                <circle cx="75" cy="50" r="30" fill="none" stroke="#e74c3c"/>
+            </svg>`;
+            
+            const density = parseInt(document.getElementById('density1').value);
+            const extractor = new SVGPathExtractor({ pointDensity: density });
+            
+            try {
+                const paths = await extractor.extractPoints(svgContent);
+                const output = document.getElementById('demo1-output');
+                
+                let html = `<strong>Извлечено ${paths.length} путей:</strong><br>`;
+                paths.forEach((path, pathIndex) => {
+                    html += `Путь ${pathIndex + 1}: ${path.length} точек<br>`;
+                    const preview = path.slice(0, 3);
+                    preview.forEach((point, i) => {
+                        html += `  [${i}] x: ${point.x.toFixed(1)}, y: ${point.y.toFixed(1)}<br>`;
+                    });
+                    if (path.length > 3) {
+                        html += `  ... и ещё ${path.length - 3} точек<br>`;
+                    }
+                });
+                
+                output.innerHTML = html;
+            } catch (error) {
+                document.getElementById('demo1-output').innerHTML = `❌ Ошибка: ${error.message}`;
+            }
+        }
+
+        // Демо 2: Анимация
+        let animationId = null;
+        let demo2PathsData = null;
+        let demo2LastClosePaths = false;
+        
+        // Utility function for drawing paths
+        function drawPaths(canvas, paths, options = {}) {
+            const {
+                showLines = true,
+                showPoints = true,
+                pointSize = 2,
+                animate = false,
+                animationProgress = 1,
+                colors = ['#9b59b6', '#2ecc71', '#e74c3c', '#3498db', '#f39c12']
+            } = options;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate scale to fit canvas
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            paths.forEach(path => {
+                path.forEach(point => {
+                    minX = Math.min(minX, point.x);
+                    minY = Math.min(minY, point.y);
+                    maxX = Math.max(maxX, point.x);
+                    maxY = Math.max(maxY, point.y);
+                });
+            });
+            
+            const padding = 20;
+            const scaleX = (canvas.width - 2 * padding) / (maxX - minX);
+            const scaleY = (canvas.height - 2 * padding) / (maxY - minY);
+            const scale = Math.min(scaleX, scaleY);
+            
+            const offsetX = (canvas.width - (maxX - minX) * scale) / 2 - minX * scale;
+            const offsetY = (canvas.height - (maxY - minY) * scale) / 2 - minY * scale;
+            
+            function transform(point) {
+                return {
+                    x: point.x * scale + offsetX,
+                    y: point.y * scale + offsetY
+                };
+            }
+            
+            // Draw lines
+            if (showLines) {
+                paths.forEach((path, pathIdx) => {
+                    if (path.length === 0) return;
+                    
+                    ctx.strokeStyle = colors[pathIdx % colors.length];
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    
+                    const pointsToShow = animate 
+                        ? Math.floor(path.length * animationProgress)
+                        : path.length;
+                    
+                    for (let i = 0; i < pointsToShow; i++) {
+                        const transformed = transform(path[i]);
+                        if (i === 0) {
+                            ctx.moveTo(transformed.x, transformed.y);
+                        } else {
+                            ctx.lineTo(transformed.x, transformed.y);
+                        }
+                    }
+                    
+                    ctx.stroke();
+                });
+            }
+            
+            // Draw points
+            if (showPoints) {
+                paths.forEach((path, pathIdx) => {
+                    if (path.length === 0) return;
+                    
+                    ctx.fillStyle = colors[pathIdx % colors.length];
+                    
+                    const pointsToShow = animate 
+                        ? Math.floor(path.length * animationProgress)
+                        : path.length;
+                    
+                    for (let i = 0; i < pointsToShow; i++) {
+                        const transformed = transform(path[i]);
+                        ctx.beginPath();
+                        ctx.arc(transformed.x, transformed.y, pointSize, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                });
+            }
+        }
+        
+        // Демо 3: SVG с изображениями
+        async function runDemo3() {
+            const svgWithImages = `<svg viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <!-- Растровое изображение -->
+                <image x="10" y="10" width="30" height="30" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="/>
+                
+                <!-- Обрабатываемые элементы -->
+                <circle cx="75" cy="30" r="15" fill="none" stroke="#e74c3c"/>
+                <rect x="50" y="60" width="50" height="25" fill="none" stroke="#3498db"/>
+                
+                <!-- Текст -->
+                <text x="75" y="95" text-anchor="middle">Текст игнорируется</text>
+            </svg>`;
+            
+            const extractor = new SVGPathExtractor({ pointDensity: 8 });
+            
+            try {
+                const paths = await extractor.extractPoints(svgWithImages);
+                const output = document.getElementById('demo3-output');
+                
+                let html = `<strong>✅ Успешно обработано!</strong><br>`;
+                html += `📊 Извлечено путей: ${paths.length} (circle + rect)<br>`;
+                html += `🚫 Изображения и текст проигнорированы<br><br>`;
+                
+                paths.forEach((path, pathIndex) => {
+                    const elementType = pathIndex === 0 ? 'circle' : 'rect';
+                    html += `${elementType}: ${path.length} точек<br>`;
+                });
+                
+                html += `<br><small>🎯 Библиотека корректно игнорирует неподдерживаемые элементы</small>`;
+                
+                output.innerHTML = html;
+            } catch (error) {
+                document.getElementById('demo3-output').innerHTML = `❌ Ошибка: ${error.message}`;
+            }
+        }
+        
+        async function runDemo2() {
+            const svgContent = `<svg viewBox="0 0 150 100">
+                <path d="M 20 50 Q 50 20 80 50 T 130 50" fill="none" stroke="#9b59b6"/>
+                <polygon points="10,80 40,80 25,95" fill="none" stroke="#2ecc71"/>
+            </svg>`;
+            
+            const closePaths = document.getElementById('close-paths-2').checked;
+            const extractor = new SVGPathExtractor({ pointDensity: 5, closePaths });
+            demo2PathsData = await extractor.extractPoints(svgContent);
+            
+            const canvas = document.getElementById('demo2-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const totalPoints = demo2PathsData.reduce((sum, path) => sum + path.length, 0);
+            let progress = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const showLines = document.getElementById('show-lines-2').checked;
+                const showPoints = document.getElementById('show-points-2').checked;
+                const pointSize = parseInt(document.getElementById('point-size-2').value);
+                
+                drawPaths(canvas, demo2PathsData, {
+                    showLines,
+                    showPoints,
+                    pointSize,
+                    animate: true,
+                    animationProgress: progress
+                });
+                
+                progress += 0.01;
+                
+                if (progress <= 1) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            }
+            
+            clearDemo2();
+            animate();
+        }
+        
+        async function drawDemo2Static() {
+            const closePaths = document.getElementById('close-paths-2').checked;
+            
+            // Пересоздать данные если изменилась опция замыкания
+            if (!demo2PathsData || demo2LastClosePaths !== closePaths) {
+                const svgContent = `<svg viewBox="0 0 150 100">
+                    <path d="M 20 50 Q 50 20 80 50 T 130 50" fill="none" stroke="#9b59b6"/>
+                    <polygon points="10,80 40,80 25,95" fill="none" stroke="#2ecc71"/>
+                </svg>`;
+                
+                const extractor = new SVGPathExtractor({ pointDensity: 5, closePaths });
+                demo2PathsData = await extractor.extractPoints(svgContent);
+                demo2LastClosePaths = closePaths;
+            }
+            
+            clearDemo2();
+            
+            const canvas = document.getElementById('demo2-canvas');
+            const showLines = document.getElementById('show-lines-2').checked;
+            const showPoints = document.getElementById('show-points-2').checked;
+            const pointSize = parseInt(document.getElementById('point-size-2').value);
+            
+            drawPaths(canvas, demo2PathsData, {
+                showLines,
+                showPoints,
+                pointSize
+            });
+        }
+        
+        function clearDemo2() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            const canvas = document.getElementById('demo2-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Демо 4: Загрузка файла
+        let filePathsData = null;
+        
+        async function loadSVGFile() {
+            const fileInput = document.getElementById('svg-file');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            try {
+                const svgContent = await file.text();
+                const density = parseInt(document.getElementById('density-file').value);
+                const closePaths = document.getElementById('close-paths-file').checked;
+                const extractor = new SVGPathExtractor({ pointDensity: density, closePaths });
+                filePathsData = await extractor.extractPoints(svgContent);
+                
+                const totalPoints = filePathsData.reduce((sum, path) => sum + path.length, 0);
+                
+                // Show results
+                let html = `<h4>📊 Результат анализа файла "${file.name}":</h4>`;
+                html += `<p><strong>Извлечено:</strong> ${filePathsData.length} путей с ${totalPoints} точками</p>`;
+                
+                filePathsData.forEach((path, index) => {
+                    html += `<p>Путь ${index + 1}: ${path.length} точек</p>`;
+                });
+                
+                if (closePaths) {
+                    html += `<p><small>🔗 Замыкание фигур включено</small></p>`;
+                }
+                
+                document.getElementById('file-result').innerHTML = html;
+                
+                // Show visualization controls and canvas
+                document.getElementById('file-viz-controls').style.display = 'flex';
+                const canvas = document.getElementById('file-canvas');
+                canvas.style.display = 'block';
+                
+                // Draw visualization
+                drawFileVisualization();
+                
+            } catch (error) {
+                document.getElementById('file-result').innerHTML = `❌ Ошибка: ${error.message}`;
+                document.getElementById('file-viz-controls').style.display = 'none';
+                document.getElementById('file-canvas').style.display = 'none';
+            }
+        }
+        
+        function drawFileVisualization() {
+            if (!filePathsData) return;
+            
+            const canvas = document.getElementById('file-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const showLines = document.getElementById('show-lines-file').checked;
+            const showPoints = document.getElementById('show-points-file').checked;
+            const pointSize = parseInt(document.getElementById('point-size-file').value);
+            
+            drawPaths(canvas, filePathsData, {
+                showLines,
+                showPoints,
+                pointSize
+            });
+        }
+
+        // Обновление значения плотности
+        document.getElementById('density1').addEventListener('input', function() {
+            document.getElementById('density1-value').textContent = this.value;
+        });
+        
+        // Event listeners для демо 2
+        document.getElementById('point-size-2').addEventListener('input', function() {
+            document.getElementById('point-size-value-2').textContent = this.value;
+            if (demo2PathsData) drawDemo2Static();
+        });
+        
+        document.getElementById('show-lines-2').addEventListener('change', function() {
+            if (demo2PathsData) drawDemo2Static();
+        });
+        
+        document.getElementById('show-points-2').addEventListener('change', function() {
+            if (demo2PathsData) drawDemo2Static();
+        });
+        
+        document.getElementById('close-paths-2').addEventListener('change', function() {
+            drawDemo2Static();
+        });
+        
+        // Event listeners для загрузки файла
+        document.getElementById('point-size-file').addEventListener('input', function() {
+            document.getElementById('point-size-value-file').textContent = this.value;
+            drawFileVisualization();
+        });
+        
+        document.getElementById('density-file').addEventListener('input', function() {
+            document.getElementById('density-file-value').textContent = this.value;
+            // Перезагружаем файл с новой плотностью
+            if (filePathsData) {
+                loadSVGFile();
+            }
+        });
+        
+        document.getElementById('show-lines-file').addEventListener('change', drawFileVisualization);
+        document.getElementById('show-points-file').addEventListener('change', drawFileVisualization);
+        document.getElementById('close-paths-file').addEventListener('change', function() {
+            if (filePathsData) {
+                loadSVGFile(); // Перезагрузить файл с новыми настройками
+            }
+        });
+    </script>
+</body>
+</html> 

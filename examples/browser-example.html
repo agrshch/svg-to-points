@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Path Extractor - Browser Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .panel {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            max-width: 100%;
+        }
+        .controls {
+            margin: 10px 0;
+        }
+        .controls label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        .controls input, .controls select {
+            padding: 5px;
+            margin: 5px;
+        }
+        .info {
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .svg-display {
+            max-width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            overflow: auto;
+        }
+        .output {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .example-svg {
+            width: 100%;
+            height: 200px;
+            background: white;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 SVG Path Extractor - Browser Example</h1>
+    <p>This example demonstrates how to use the SVG Path Extractor library in the browser to extract points from SVG elements and visualize them.</p>
+
+    <div class="container">
+        <!-- Input Panel -->
+        <div class="panel">
+            <h2>📝 Input</h2>
+            
+            <div class="controls">
+                <label>Point Density:</label>
+                <input type="number" id="density" value="8" min="1" max="50" step="1">
+                <small>(lower = more points)</small>
+            </div>
+
+            <div class="controls">
+                <label>Example SVG:</label>
+                <select id="svgSelect">
+                    <option value="circle">Circle</option>
+                    <option value="rectangle">Rectangle</option>
+                    <option value="path">Complex Path</option>
+                    <option value="multiple">Multiple Shapes</option>
+                    <option value="star">Star Polygon</option>
+                </select>
+                <button onclick="loadExample()">Load Example</button>
+            </div>
+
+            <div class="controls">
+                <input type="file" id="fileInput" accept=".svg" onchange="loadFile()">
+                <small>Or upload your own SVG file</small>
+            </div>
+
+            <h3>SVG Preview:</h3>
+            <div id="svgPreview" class="svg-display"></div>
+
+            <button onclick="extractPoints()" style="width: 100%; margin-top: 10px;">🔍 Extract Points</button>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel">
+            <h2>📊 Output</h2>
+            
+            <div class="info" id="info">
+                <strong>Ready to extract points!</strong><br>
+                Select an example or upload an SVG file, then click "Extract Points".
+            </div>
+
+            <h3>Visualization:</h3>
+            <canvas id="canvas" width="400" height="300"></canvas>
+            
+            <div class="controls">
+                <button onclick="downloadPoints()">💾 Download Points (CSV)</button>
+                <button onclick="animatePoints()">🎬 Animate Points</button>
+                <button onclick="clearCanvas()">🧹 Clear Canvas</button>
+            </div>
+
+            <h3>Points Data:</h3>
+            <div id="output" class="output">
+                Points will appear here...
+            </div>
+        </div>
+    </div>
+
+    <!-- Load the library -->
+    <script src="../svg-path-extractor.js"></script>
+    
+    <script>
+        // SVG Examples
+        const examples = {
+            circle: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="60" fill="none" stroke="#e74c3c" stroke-width="3"/>
+            </svg>`,
+            
+            rectangle: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <rect x="50" y="50" width="100" height="80" fill="none" stroke="#3498db" stroke-width="3"/>
+            </svg>`,
+            
+            path: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 50 150 Q 100 50 150 150 T 180 100" fill="none" stroke="#9b59b6" stroke-width="3"/>
+            </svg>`,
+            
+            multiple: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="25" fill="none" stroke="#e74c3c" stroke-width="2"/>
+                <rect x="110" y="35" width="50" height="50" fill="none" stroke="#3498db" stroke-width="2"/>
+                <path d="M 30 120 L 80 120 L 55 170 Z" fill="none" stroke="#2ecc71" stroke-width="2"/>
+                <ellipse cx="140" cy="140" rx="30" ry="20" fill="none" stroke="#f39c12" stroke-width="2"/>
+            </svg>`,
+            
+            star: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="100,20 120,70 170,70 130,100 150,150 100,120 50,150 70,100 30,70 80,70" 
+                         fill="none" stroke="#e67e22" stroke-width="3"/>
+            </svg>`
+        };
+
+        let currentPaths = [];
+        let animationId = null;
+        const extractor = new SVGPathExtractor();
+
+        // Load example SVG
+        function loadExample() {
+            const select = document.getElementById('svgSelect');
+            const svgContent = examples[select.value];
+            document.getElementById('svgPreview').innerHTML = svgContent;
+            updateInfo('Example loaded. Click "Extract Points" to process.');
+        }
+
+        // Load SVG file
+        function loadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('svgPreview').innerHTML = e.target.result;
+                    updateInfo('SVG file loaded. Click "Extract Points" to process.');
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Extract points from SVG
+        async function extractPoints() {
+            const svgContent = document.getElementById('svgPreview').innerHTML;
+            const density = parseFloat(document.getElementById('density').value);
+            
+            if (!svgContent.trim()) {
+                updateInfo('❌ Please load an SVG first!', 'error');
+                return;
+            }
+
+            try {
+                updateInfo('🔄 Extracting points...');
+                
+                const startTime = performance.now();
+                currentPaths = await extractor.extractPoints(svgContent, density);
+                const endTime = performance.now();
+                
+                const totalPoints = currentPaths.reduce((sum, path) => sum + path.length, 0);
+                updateInfo(`✅ Extracted ${currentPaths.length} paths with ${totalPoints} total points in ${(endTime - startTime).toFixed(2)}ms`);
+                
+                displayPoints();
+                drawPoints();
+                
+            } catch (error) {
+                updateInfo(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Display points in output
+        function displayPoints() {
+            const output = document.getElementById('output');
+            let html = '';
+            
+            currentPaths.forEach((path, pathIndex) => {
+                html += `<strong>Path ${pathIndex + 1} (${path.length} points):</strong><br>`;
+                
+                // Show first few points
+                const preview = path.slice(0, 5);
+                preview.forEach((point, pointIndex) => {
+                    html += `  [${pointIndex}] x: ${point.x.toFixed(2)}, y: ${point.y.toFixed(2)}<br>`;
+                });
+                
+                if (path.length > 5) {
+                    html += `  ... and ${path.length - 5} more points<br>`;
+                }
+                html += '<br>';
+            });
+            
+            output.innerHTML = html;
+        }
+
+        // Draw points on canvas
+        function drawPoints() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (currentPaths.length === 0) return;
+            
+            // Calculate scaling to fit canvas
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            currentPaths.forEach(path => {
+                path.forEach(point => {
+                    minX = Math.min(minX, point.x);
+                    minY = Math.min(minY, point.y);
+                    maxX = Math.max(maxX, point.x);
+                    maxY = Math.max(maxY, point.y);
+                });
+            });
+            
+            const scale = Math.min(
+                (canvas.width - 40) / (maxX - minX),
+                (canvas.height - 40) / (maxY - minY)
+            );
+            
+            const offsetX = 20 - minX * scale;
+            const offsetY = 20 - minY * scale;
+            
+            // Draw paths
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e67e22'];
+            
+            currentPaths.forEach((path, pathIndex) => {
+                ctx.strokeStyle = colors[pathIndex % colors.length];
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                path.forEach((point, pointIndex) => {
+                    const x = point.x * scale + offsetX;
+                    const y = point.y * scale + offsetY;
+                    
+                    if (pointIndex === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.stroke();
+                
+                // Draw points
+                ctx.fillStyle = colors[pathIndex % colors.length];
+                path.forEach(point => {
+                    const x = point.x * scale + offsetX;
+                    const y = point.y * scale + offsetY;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+            });
+        }
+
+        // Animate points
+        function animatePoints() {
+            if (currentPaths.length === 0) {
+                updateInfo('❌ Extract points first!', 'error');
+                return;
+            }
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+                return;
+            }
+            
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let frameCount = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Calculate scaling (same as drawPoints)
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                currentPaths.forEach(path => {
+                    path.forEach(point => {
+                        minX = Math.min(minX, point.x);
+                        minY = Math.min(minY, point.y);
+                        maxX = Math.max(maxX, point.x);
+                        maxY = Math.max(maxY, point.y);
+                    });
+                });
+                
+                const scale = Math.min(
+                    (canvas.width - 40) / (maxX - minX),
+                    (canvas.height - 40) / (maxY - minY)
+                );
+                
+                const offsetX = 20 - minX * scale;
+                const offsetY = 20 - minY * scale;
+                
+                const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e67e22'];
+                
+                currentPaths.forEach((path, pathIndex) => {
+                    const pointsToShow = Math.min(frameCount - pathIndex * 10, path.length);
+                    
+                    if (pointsToShow > 0) {
+                        ctx.strokeStyle = colors[pathIndex % colors.length];
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        
+                        for (let i = 0; i < pointsToShow; i++) {
+                            const point = path[i];
+                            const x = point.x * scale + offsetX;
+                            const y = point.y * scale + offsetY;
+                            
+                            if (i === 0) {
+                                ctx.moveTo(x, y);
+                            } else {
+                                ctx.lineTo(x, y);
+                            }
+                        }
+                        
+                        ctx.stroke();
+                        
+                        // Highlight current point
+                        if (pointsToShow < path.length) {
+                            const currentPoint = path[pointsToShow - 1];
+                            const x = currentPoint.x * scale + offsetX;
+                            const y = currentPoint.y * scale + offsetY;
+                            
+                            ctx.fillStyle = colors[pathIndex % colors.length];
+                            ctx.beginPath();
+                            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                            ctx.fill();
+                        }
+                    }
+                });
+                
+                frameCount++;
+                
+                const totalPoints = currentPaths.reduce((sum, path) => sum + path.length, 0);
+                if (frameCount < totalPoints + 50) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    animationId = null;
+                }
+            }
+            
+            animate();
+        }
+
+        // Download points as CSV
+        function downloadPoints() {
+            if (currentPaths.length === 0) {
+                updateInfo('❌ Extract points first!', 'error');
+                return;
+            }
+            
+            let csv = 'path_id,point_id,x,y\n';
+            currentPaths.forEach((path, pathIndex) => {
+                path.forEach((point, pointIndex) => {
+                    csv += `${pathIndex},${pointIndex},${point.x.toFixed(3)},${point.y.toFixed(3)}\n`;
+                });
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'svg_points.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            updateInfo('✅ Points downloaded as CSV!');
+        }
+
+        // Clear canvas
+        function clearCanvas() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+
+        // Update info panel
+        function updateInfo(message, type = 'info') {
+            const info = document.getElementById('info');
+            info.innerHTML = `<strong>${message}</strong>`;
+            
+            if (type === 'error') {
+                info.style.background = '#ffebee';
+                info.style.color = '#c62828';
+            } else {
+                info.style.background = '#f0f8ff';
+                info.style.color = '#333';
+            }
+        }
+
+        // Initialize with circle example
+        document.addEventListener('DOMContentLoaded', function() {
+            loadExample();
+        });
+    </script>
+</body>
+</html> 

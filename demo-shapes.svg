@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Заголовок -->
+    <text x="150" y="20" text-anchor="middle" font-size="14" fill="#333">Демо-файл для SVG Path Extractor</text>
+    
+    <!-- Круг -->
+    <circle cx="60" cy="80" r="30" fill="none" stroke="#e74c3c" stroke-width="3"/>
+    
+    <!-- Прямоугольник -->
+    <rect x="120" y="50" width="60" height="40" fill="none" stroke="#3498db" stroke-width="2"/>
+    
+    <!-- Эллипс -->
+    <ellipse cx="240" cy="70" rx="40" ry="25" fill="none" stroke="#9b59b6" stroke-width="2"/>
+    
+    <!-- Сложный путь -->
+    <path d="M 50 120 Q 100 100 150 120 T 250 120" fill="none" stroke="#2ecc71" stroke-width="3"/>
+    
+    <!-- Полигон -->
+    <polygon points="80,140 120,140 100,170" fill="none" stroke="#f39c12" stroke-width="2"/>
+    
+    <!-- Полилиния -->
+    <polyline points="150,140 180,150 210,140 240,160 270,140" fill="none" stroke="#e67e22" stroke-width="2"/>
+    
+    <!-- Растровое изображение (должно игнорироваться) -->
+    <image x="10" y="10" width="20" height="20" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="/>
+    
+    <!-- Линия -->
+    <line x1="20" y1="180" x2="280" y2="180" stroke="#34495e" stroke-width="1"/>
+</svg> 
