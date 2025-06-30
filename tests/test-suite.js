@@ -6,7 +6,7 @@
 // Import or require the library (adjust for your environment)
 let SVGPathExtractor;
 try {
-  SVGPathExtractor = require('./svg-path-extractor.js');
+  SVGPathExtractor = require('../svg-to-points.js');
 } catch (e) {
   // Fallback for different module systems
   if (typeof window !== 'undefined' && window.SVGPathExtractor) {

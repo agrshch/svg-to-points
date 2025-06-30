@@ -2,12 +2,12 @@
   "name": "svg-to-points",
   "version": "1.0.0",
   "description": "A minimal JavaScript library for extracting points along SVG paths with configurable density",
-  "main": "svg-path-extractor.js",
+  "main": "svg-to-points.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "node test-suite.js",
+    "test": "node tests/test-suite.js",
     "test:browser": "npm run test:open",
-    "test:open": "echo 'Open test.html in your browser to run browser tests'",
+    "test:open": "echo 'Open index.html in your browser to run browser tests'",
     "lint": "echo 'Add your preferred linter here'",
     "build": "echo 'No build step required - vanilla JavaScript'"
   },
@@ -42,10 +42,11 @@
     "xmldom": "^0.6.0"
   },
   "files": [
-    "svg-path-extractor.js",
+    "svg-to-points.js",
     "index.d.ts",
     "README.md",
     "LICENSE",
+    "index.html",
     "examples/"
   ]
 }

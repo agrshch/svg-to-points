@@ -3,7 +3,7 @@
  * Run with: node examples/node-example.js
  */
 
-const SVGPathExtractor = require('../svg-path-extractor.js');
+const SVGPathExtractor = require('../svg-to-points.js');
 const fs = require('fs').promises;
 
 async function main() {

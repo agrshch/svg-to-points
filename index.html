@@ -122,7 +122,7 @@
     <p>A powerful, dependency-free JavaScript library for extracting points from SVG paths. Just include one file!</p>
 
     <div class="highlight">
-        <strong>✅ Ready to use:</strong> Copy <code>svg-path-extractor.js</code> to your project and start extracting points
+        <strong>✅ Ready to use:</strong> Copy <code>svg-to-points.js</code> to your project and start extracting points
         <br><strong>🎨 Features:</strong> Interactive visualization of extracted points and paths with configurable parameters
     </div>
 
@@ -202,15 +202,15 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
         <div class="svg-container">
             <div class="svg-display">
                 <svg width="150" height="100" viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <!-- Растровое изображение (игнорируется) -->
-                    <image x="10" y="10" width="30" height="30" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="/>
-                    
-                    <!-- Обрабатываемые элементы -->
-                    <circle cx="75" cy="30" r="15" fill="none" stroke="#e74c3c" stroke-width="2"/>
-                    <rect x="50" y="60" width="50" height="25" fill="none" stroke="#3498db" stroke-width="2"/>
-                    
-                    <!-- Текст тоже игнорируется -->
-                    <text x="75" y="95" text-anchor="middle" font-size="8">Текст игнорируется</text>
+                                    <!-- Raster image (ignored) -->
+                <image x="10" y="10" width="30" height="30" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="/>
+                
+                <!-- Processed elements -->
+                <circle cx="75" cy="30" r="15" fill="none" stroke="#e74c3c" stroke-width="2"/>
+                <rect x="50" y="60" width="50" height="25" fill="none" stroke="#3498db" stroke-width="2"/>
+                
+                <!-- Text is also ignored -->
+                <text x="75" y="95" text-anchor="middle" font-size="8">Text is ignored</text>
                 </svg>
             </div>
             <div class="points-display" id="demo3-output">
@@ -272,7 +272,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
         <h2>📋 How to use in your project</h2>
         
         <h3>Option 1: Direct file inclusion</h3>
-        <pre><code>&lt;script src="svg-path-extractor.js">&lt;/script>
+        <pre><code>&lt;script src="svg-to-points.js">&lt;/script>
 &lt;script>
   const extractor = new SVGPathExtractor();
   
@@ -293,7 +293,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
 
         <h3>Option 3: ES6 modules (modern browsers)</h3>
         <pre><code>&lt;script type="module">
-  import SVGPathExtractor from './svg-path-extractor.js';
+  import SVGPathExtractor from './svg-to-points.js';
   const extractor = new SVGPathExtractor();
 &lt;/script></code></pre>
     </div>
@@ -318,7 +318,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
     </div>
 
     <!-- Include library -->
-    <script src="svg-path-extractor.js"></script>
+    <script src="svg-to-points.js"></script>
     
     <script>
         // Demo 1: Basic extraction
@@ -602,7 +602,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
                 drawFileVisualization();
                 
             } catch (error) {
-                document.getElementById('file-result').innerHTML = `❌ Ошибка: ${error.message}`;
+                document.getElementById('file-result').innerHTML = `❌ Error: ${error.message}`;
                 document.getElementById('file-viz-controls').style.display = 'none';
                 document.getElementById('file-canvas').style.display = 'none';
             }
@@ -626,7 +626,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
             });
         }
 
-        // Обновление значения плотности
+        // Update density value display
         document.getElementById('density1').addEventListener('input', function() {
             document.getElementById('density1-value').textContent = this.value;
         });
@@ -649,7 +649,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
             drawDemo2Static();
         });
         
-        // Event listeners для загрузки файла
+        // Event listeners for file upload
         document.getElementById('point-size-file').addEventListener('input', function() {
             document.getElementById('point-size-value-file').textContent = this.value;
             drawFileVisualization();
@@ -657,7 +657,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
         
         document.getElementById('density-file').addEventListener('input', function() {
             document.getElementById('density-file-value').textContent = this.value;
-            // Перезагружаем файл с новой плотностью
+            // Reload file with new density
             if (filePathsData) {
                 loadSVGFile();
             }
@@ -667,7 +667,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
         document.getElementById('show-points-file').addEventListener('change', drawFileVisualization);
         document.getElementById('close-paths-file').addEventListener('change', function() {
             if (filePathsData) {
-                loadSVGFile(); // Перезагрузить файл с новыми настройками
+                loadSVGFile(); // Reload file with new settings
             }
         });
     </script>

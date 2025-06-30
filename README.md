@@ -1,4 +1,4 @@
-# SVG Path Extractor
+# SVG to Points
 
 A powerful, dependency-free JavaScript library for extracting points along SVG paths with configurable density and vertex preservation. Perfect for converting SVG graphics into arrays of coordinate points for use in animations, data visualization, or drawing applications.
 
@@ -18,18 +18,18 @@ A powerful, dependency-free JavaScript library for extracting points along SVG p
 
 ## 📥 Installation
 
-Currently available as a standalone file. Download `svg-path-extractor.js` from this repository.
+Currently available as a standalone file. Download `svg-to-points.js` from this repository.
 
 **Future releases will be available on:**
-- NPM: `npm install svg-path-extractor` *(coming soon)*
-- CDN: `<script src="https://cdn.example.com/svg-path-extractor.js"></script>` *(coming soon)*
+- NPM: `npm install svg-to-points` *(coming soon)*
+- CDN: `<script src="https://cdn.example.com/svg-to-points.js"></script>` *(coming soon)*
 
 ## 🚀 Quick Start
 
 ### Browser Usage
 
 ```html
-<script src="svg-path-extractor.js"></script>
+<script src="svg-to-points.js"></script>
 <script>
   const extractor = new SVGPathExtractor({ pointDensity: 8 });
   
@@ -49,7 +49,7 @@ Currently available as a standalone file. Download `svg-path-extractor.js` from 
 ### Node.js Usage
 
 ```javascript
-const SVGPathExtractor = require('./svg-path-extractor.js');
+const SVGPathExtractor = require('./svg-to-points.js');
 
 const extractor = new SVGPathExtractor({
   pointDensity: 5,        // 5 units between points
@@ -70,7 +70,7 @@ console.log(`Extracted ${paths.length} paths with ${paths[0]?.length} points eac
 ### ES6 Modules (when available)
 
 ```javascript
-import SVGPathExtractor from './svg-path-extractor.js';
+import SVGPathExtractor from './svg-to-points.js';
 
 const extractor = new SVGPathExtractor();
 const paths = await extractor.extractPoints(svgContent);
@@ -309,14 +309,16 @@ The library will automatically detect and use it. If not available, it falls bac
 
 The library includes comprehensive test files:
 
-- **`test-suite.js`**: Automated test suite (22 tests)
-- **`debug-text.html`**: Interactive visual testing
-- **`standalone-demo.html`**: Feature demonstration
+- **`tests/test-suite.js`**: Automated test suite (14 tests)
+- **`index.html`**: Interactive demo and visual testing
+- **`tests/`**: Test SVG files for various scenarios
 
-Run tests by opening HTML files in a browser or running Node.js tests:
+Run tests using npm or Node.js directly:
 
 ```bash
-node test-suite.js
+npm test
+# or
+node tests/test-suite.js
 ```
 
 ## 🔧 Development Status
@@ -361,13 +363,13 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🔗 Files in This Repository
 
-- **`svg-path-extractor.js`**: Main library file
+- **`svg-to-points.js`**: Main library file
 - **`index.d.ts`**: TypeScript definitions
-- **`test-suite.js`**: Automated tests
-- **`debug-text.html`**: Interactive testing page
-- **`standalone-demo.html`**: Feature demonstration
-- **`examples/`**: Usage examples
-- **`test-*.svg`**: Test SVG files
+- **`index.html`**: Interactive demo page (GitHub Pages)
+- **`examples/`**: Usage examples (browser and Node.js)
+- **`tests/`**: Test suite and test SVG files
+- **`package.json`**: NPM package configuration
+- **`LICENSE`**: MIT license file
 
 ---
 
