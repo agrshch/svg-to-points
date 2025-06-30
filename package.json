@@ -1,7 +1,7 @@
 {
-  "name": "svg-path-extractor",
+  "name": "svg-to-points",
   "version": "1.0.0",
-  "description": "A JavaScript library for extracting points along SVG paths with configurable density",
+  "description": "A minimal JavaScript library for extracting points along SVG paths with configurable density",
   "main": "svg-path-extractor.js",
   "types": "index.d.ts",
   "scripts": {
@@ -22,16 +22,16 @@
     "drawing",
     "vector"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Anatoly Grashchenko <agrshch@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/svg-path-extractor.git"
+    "url": "https://github.com/agrshch/svg-to-points.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/svg-path-extractor/issues"
+    "url": "https://github.com/agrshch/svg-to-points/issues"
   },
-  "homepage": "https://github.com/yourusername/svg-path-extractor#readme",
+  "homepage": "https://github.com/agrshch/svg-to-points",
   "engines": {
     "node": ">=12.0.0"
   },
