@@ -678,6 +678,7 @@ class SVGPathExtractor {
     const commands = pathData.match(/[MLHVCSQTAZmlhvcsqtaz][^MLHVCSQTAZmlhvcsqtaz]*/g) || [];
     let currentX = 0, currentY = 0;
     let startX = 0, startY = 0;  // For Z command
+    let lastControlX = 0, lastControlY = 0;  // For T command
 
     for (let command of commands) {
       const type = command[0].toUpperCase();
@@ -697,6 +698,10 @@ class SVGPathExtractor {
             currentY = y;
             startX = x;  // Remember subpath start
             startY = y;
+            
+            // Reset control point for T command
+            lastControlX = currentX;
+            lastControlY = currentY;
           }
           break;
 
@@ -768,6 +773,32 @@ class SVGPathExtractor {
             // Approximate quadratic Bezier curve
             const curvePoints = this._approximateQuadraticBezier(currentX, currentY, cpx, cpy, x, y, density);
             points.push(...curvePoints.slice(1)); // Skip first point to avoid duplicates
+            
+            // Remember control point for potential T command
+            lastControlX = cpx;
+            lastControlY = cpy;
+            
+            currentX = x;
+            currentY = y;
+          }
+          break;
+
+        case 'T': // Smooth quadratic Bezier curve
+          if (args.length >= 2) {
+            const x = isRelative ? currentX + args[0] : args[0];
+            const y = isRelative ? currentY + args[1] : args[1];
+            
+            // Calculate reflected control point
+            const cpx = 2 * currentX - lastControlX;
+            const cpy = 2 * currentY - lastControlY;
+            
+            // Approximate quadratic Bezier curve
+            const curvePoints = this._approximateQuadraticBezier(currentX, currentY, cpx, cpy, x, y, density);
+            points.push(...curvePoints.slice(1)); // Skip first point to avoid duplicates
+            
+            // Update control point for potential next T command
+            lastControlX = cpx;
+            lastControlY = cpy;
             
             currentX = x;
             currentY = y;
