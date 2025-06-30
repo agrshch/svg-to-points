@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Build outputs
+dist/
+build/
+
+# Debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Cache directories
+.cache/
+.npm/
+
+# Optional: OS generated files
+Thumbs.db
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
