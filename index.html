@@ -406,7 +406,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
                     ctx.beginPath();
                     
                     const pointsToShow = animate 
-                        ? Math.floor(path.length * animationProgress)
+                        ? Math.ceil(path.length * animationProgress)
                         : path.length;
                     
                     for (let i = 0; i < pointsToShow; i++) {
@@ -430,7 +430,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
                     ctx.fillStyle = colors[pathIdx % colors.length];
                     
                     const pointsToShow = animate 
-                        ? Math.floor(path.length * animationProgress)
+                        ? Math.ceil(path.length * animationProgress)
                         : path.length;
                     
                     for (let i = 0; i < pointsToShow; i++) {
@@ -494,7 +494,7 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
             const ctx = canvas.getContext('2d');
             
             const totalPoints = demo2PathsData.reduce((sum, path) => sum + path.length, 0);
-            let progress = 0;
+            let progress = 0.01; // Start with a small progress to show first point
             
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -511,10 +511,18 @@ console.log(`Got ${paths[0].length} points`);</code></pre>
                     animationProgress: progress
                 });
                 
-                progress += 0.01;
+                progress += 0.015; // Slightly slower animation for better visibility
                 
-                if (progress <= 1) {
+                if (progress < 1) {
                     animationId = requestAnimationFrame(animate);
+                } else {
+                    // Final draw with full progress to ensure all points are shown
+                    drawPaths(canvas, demo2PathsData, {
+                        showLines,
+                        showPoints,
+                        pointSize,
+                        animate: false
+                    });
                 }
             }
             
