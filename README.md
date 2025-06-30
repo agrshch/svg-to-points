@@ -94,7 +94,7 @@ new SVGPathExtractor(options?)
 | `includeOnly` | `string[] \| null` | `null` | Only process specific element types |
 | `excludeElements` | `string[]` | `[]` | Exclude specific element types |
 | `normalizeToSize` | `{width: number, height: number} \| null` | `null` | Normalize all paths to specific dimensions |
-| `closePaths` | `boolean` | `false` | Close closed shapes by duplicating first point at end |
+| `closePaths` | `boolean` | `true` | Close closed shapes by duplicating first point at end |
 
 ### Core Methods
 

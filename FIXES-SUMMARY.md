@@ -1,52 +1,52 @@
-# Исправления демо-страницы
+# Demo Page Fixes
 
-## 🔧 Исправленные проблемы
+## 🔧 Fixed Issues
 
-### 1. **Гарантированное сохранение вершин полигонов**
-- **Проблема**: Углы полигонов могли "срезаться" при низкой плотности точек
-- **Решение**: Все вершины (углы) теперь ВСЕГДА включаются в результат независимо от плотности
-- **Элементы**: `polygon`, `polyline`, `rect`
+### 1. **Guaranteed preservation of polygon vertices**
+- **Problem**: Polygon corners could be "cut off" at low point density
+- **Solution**: All vertices (corners) are now ALWAYS included in the result regardless of density
+- **Elements**: `polygon`, `polyline`, `rect`
 
-### 2. **Опциональное замыкание замкнутых фигур**
-- **Проблема**: Пользователь хотел контролировать дублирование первой точки в конце
-- **Решение**: Добавлена опция `closePaths: boolean`
-- **Логика замыкания**:
-  - ✅ **Замыкаются** (при `closePaths: true`): `polygon`, `circle`, `ellipse`, `rect`, замкнутые `path` (с командой Z)
-  - ❌ **НЕ замыкаются** никогда: `polyline`, `line`, разомкнутые `path`
+### 2. **Optional closing of closed shapes**
+- **Problem**: User wanted to control duplication of the first point at the end
+- **Solution**: Added `closePaths: boolean` option
+- **Closing logic**:
+  - ✅ **Closed** (when `closePaths: true`): `polygon`, `circle`, `ellipse`, `rect`, closed `path` (with Z command)
+  - ❌ **NOT closed** ever: `polyline`, `line`, open `path`
 
-### 3. **Увеличенные размеры канвасов**
-- **Проблема**: Маленькие канвасы затрудняли детальный просмотр
-- **Решение**: 
-  - Демо 2: `280×160` → `500×300` пикселей
-  - Загрузка файлов: `400×300` → `600×450` пикселей
+### 3. **Increased canvas sizes**
+- **Problem**: Small canvases made detailed viewing difficult
+- **Solution**: 
+  - Demo 2: `280×160` → `500×300` pixels
+  - File upload: `400×300` → `600×450` pixels
 
-## 🎨 Новые возможности визуализации
+## 🎨 New visualization features
 
-### 1. **Отображение точек**
-- Можно видеть сами извлеченные точки как цветные кружки
-- Настраиваемый размер точек (1-8px)
-- Переключение показа точек в реальном времени
+### 1. **Point display**
+- Can see the extracted points themselves as colored circles
+- Configurable point size (1-8px)
+- Real-time point display toggle
 
-### 2. **Контроль замыкания**
-- Чекбокс "Замыкать фигуры" в интерфейсе
-- Мгновенное применение изменений
-- Визуальная индикация замкнутости
+### 2. **Closing control**
+- "Close shapes" checkbox in interface
+- Instant application of changes
+- Visual indication of closure
 
-### 3. **Расширенные настройки визуализации**
-- Отдельное управление показом линий и точек
-- Настройка размера точек
-- Настройка плотности точек для загружаемых файлов
+### 3. **Extended visualization settings**
+- Separate control for showing lines and points
+- Point size adjustment
+- Point density adjustment for uploaded files
 
-## 📋 API изменения
+## 📋 API changes
 
-### Новая опция конструктора
+### New constructor option
 ```javascript
 const extractor = new SVGPathExtractor({
-  closePaths: false // По умолчанию - не замыкать (default: false)
+  closePaths: false // Default - don't close (default: false)
 });
 ```
 
-### TypeScript обновления
+### TypeScript updates
 ```typescript
 interface SVGPathExtractorOptions {
   // ... existing options ...
@@ -60,68 +60,68 @@ interface SVGPathExtractorOptions {
 }
 ```
 
-## 🧪 Тестирование
+## 🧪 Testing
 
-### Создан HTML тест (`test-vertices.html`)
-- Проверка сохранения вершин прямоугольников
-- Проверка сохранения вершин полигонов  
-- Тестирование замыкания замкнутых фигур
-- Тестирование НЕ-замыкания разомкнутых фигур
-- Визуальные результаты с цветовой индикацией
+### Created HTML test (`test-vertices.html`)
+- Check preservation of rectangle vertices
+- Check preservation of polygon vertices  
+- Test closing of closed shapes
+- Test NON-closing of open shapes
+- Visual results with color indication
 
-### Результаты тестов
-- ✅ Все вершины прямоугольников сохраняются
-- ✅ Все вершины полигонов сохраняются
-- ✅ Полигоны замыкаются при `closePaths: true`
-- ✅ Полилинии НЕ замыкаются даже при `closePaths: true`
-- ✅ Замкнутые path замыкаются при `closePaths: true`
-- ✅ Разомкнутые path НЕ замыкаются
+### Test results
+- ✅ All rectangle vertices are preserved
+- ✅ All polygon vertices are preserved
+- ✅ Polygons close when `closePaths: true`
+- ✅ Polylines do NOT close even when `closePaths: true`
+- ✅ Closed paths close when `closePaths: true`
+- ✅ Open paths do NOT close
 
-## 📁 Измененные файлы
+## 📁 Modified files
 
-1. **`svg-path-extractor.js`** - основная библиотека
-   - Добавлена опция `closePaths`
-   - Исправлена логика обработки всех элементов
-   - Гарантированное сохранение вершин
+1. **`svg-path-extractor.js`** - main library
+   - Added `closePaths` option
+   - Fixed processing logic for all elements
+   - Guaranteed vertex preservation
 
-2. **`index.d.ts`** - TypeScript определения
-   - Добавлена новая опция `closePaths`
-   - Обновлена документация
+2. **`index.d.ts`** - TypeScript definitions
+   - Added new `closePaths` option
+   - Updated documentation
 
-3. **`standalone-demo.html`** - демо-страница
-   - Увеличены размеры канвасов
-   - Добавлены чекбоксы замыкания
-   - Улучшенная визуализация точек и линий
-   - Интерактивные настройки
+3. **`standalone-demo.html`** - demo page
+   - Increased canvas sizes
+   - Added closing checkboxes
+   - Improved point and line visualization
+   - Interactive settings
 
-4. **`test-vertices.html`** - тестовая страница
-   - Автоматизированные тесты
-   - Визуальная проверка исправлений
+4. **`test-vertices.html`** - test page
+   - Automated tests
+   - Visual verification of fixes
 
-## 💡 Практические преимущества
+## 💡 Practical benefits
 
-1. **Точность углов**: Больше никаких "срезанных" углов у полигонов
-2. **Контроль замыкания**: Пользователь сам решает, нужно ли дублировать первую точку
-3. **Лучшая визуализация**: Увеличенные канвасы + точки = более детальный просмотр
-4. **Гибкость**: Настройки применяются мгновенно без перезагрузки
+1. **Corner accuracy**: No more "cut off" corners on polygons
+2. **Closing control**: User decides whether to duplicate the first point
+3. **Better visualization**: Larger canvases + points = more detailed viewing
+4. **Flexibility**: Settings apply instantly without reload
 
-## 🔍 Использование
+## 🔍 Usage
 
-### Базовое использование
+### Basic usage
 ```javascript
-// Только извлечение без замыкания
+// Only extraction without closing
 const extractor = new SVGPathExtractor();
 const paths = await extractor.extractPoints(svgContent);
 
-// С замыканием фигур
+// With shape closing
 const extractorWithClosing = new SVGPathExtractor({ closePaths: true });
 const closedPaths = await extractorWithClosing.extractPoints(svgContent);
 ```
 
-### В демо-странице
-1. Загрузите SVG файл или используйте встроенные примеры
-2. Включите "Замыкать фигуры" если нужно
-3. Настройте размер точек и плотность
-4. Переключайте показ точек/линий для анализа
+### In demo page
+1. Upload SVG file or use built-in examples
+2. Enable "Close shapes" if needed
+3. Adjust point size and density
+4. Toggle point/line display for analysis
 
-Все исправления обратно совместимы - существующий код будет работать без изменений! 
+All fixes are backward compatible - existing code will work without changes! 

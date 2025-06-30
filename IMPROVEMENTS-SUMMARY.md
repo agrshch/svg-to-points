@@ -1,13 +1,13 @@
-# 🚀 SVG Path Extractor - Сводка улучшений
+# 🚀 SVG Path Extractor - Improvements Summary
 
-## ✨ Новые возможности (добавлены без переусложнения)
+## ✨ New features (added without overcomplicating)
 
-### 1. 📊 **Метаданные элементов**
+### 1. 📊 **Element metadata**
 ```javascript
 const extractor = new SVGPathExtractor();
 const metadata = await extractor.extractPointsWithMetadata(svgContent);
 
-// Результат:
+// Result:
 // [{
 //   points: [{x: 10, y: 20}, ...],
 //   element: 'circle',
@@ -17,170 +17,170 @@ const metadata = await extractor.extractPointsWithMetadata(svgContent);
 // }]
 ```
 
-### 2. 🔧 **Утилитарные методы**
+### 2. 🔧 **Utility methods**
 ```javascript
 const paths = await extractor.extractPoints(svgContent);
 
-// Получение границ
+// Get bounding box
 const bbox = extractor.getBoundingBox(paths);
 // { x: 10, y: 20, width: 100, height: 80 }
 
-// Общая длина всех путей
+// Total length of all paths
 const totalLength = extractor.getTotalLength(paths);
 
-// Центр масс
+// Center of mass
 const center = extractor.getCenter(paths);
 // { x: 60, y: 50 }
 ```
 
-### 3. 📏 **Нормализация координат**
+### 3. 📏 **Coordinate normalization**
 ```javascript
 const extractor = new SVGPathExtractor({ 
   normalizeToSize: { width: 100, height: 100 }
 });
 
-// Все пути автоматически масштабируются к указанному размеру
+// All paths are automatically scaled to specified size
 const normalizedPaths = await extractor.extractPoints(largeSvg);
 ```
 
-### 4. 🎯 **Фильтрация элементов**
+### 4. 🎯 **Element filtering**
 ```javascript
-// Обрабатывать только определенные элементы
+// Process only specific elements
 const extractor1 = new SVGPathExtractor({ 
   includeOnly: ['circle', 'rect'] 
 });
 
-// Исключить определенные элементы  
+// Exclude specific elements  
 const extractor2 = new SVGPathExtractor({ 
   excludeElements: ['line', 'text'] 
 });
 ```
 
-### 5. ✅ **Точное включение вершин**
-- **Прямоугольники**: Все 4 угла гарантированно включены в результат
-- **Полигоны**: Все исходные вершины сохраняются
-- **Линии**: Начальная и конечная точки всегда присутствуют
-- Порядок точек сохраняется
+### 5. ✅ **Precise vertex inclusion**
+- **Rectangles**: All 4 corners guaranteed to be included in result
+- **Polygons**: All original vertices preserved
+- **Lines**: Start and end points always present
+- Point order is preserved
 
-### 6. 🚫 **Надежная обработка растровых изображений**
-- `<image>` элементы корректно игнорируются
-- `<text>` элементы игнорируются  
-- Неизвестные элементы не ломают работу
-- Библиотека не падает при наличии неподдерживаемых элементов
+### 6. 🚫 **Robust raster image handling**
+- `<image>` elements correctly ignored
+- `<text>` elements ignored  
+- Unknown elements don't break functionality
+- Library doesn't crash when unsupported elements are present
 
-## 📈 **Улучшенная производительность**
+## 📈 **Improved performance**
 
-### Тестирование производительности:
-- ✅ **Сложные SVG (100 элементов)**: < 5ms
-- ✅ **Большие файлы**: корректная обработка
-- ✅ **Память**: эффективное использование
+### Performance testing:
+- ✅ **Complex SVGs (100 elements)**: < 5ms
+- ✅ **Large files**: proper handling
+- ✅ **Memory**: efficient usage
 
-## 🔍 **Усиленное тестирование**
+## 🔍 **Enhanced testing**
 
-### Основные тесты: **14/14 ✅**
-1. Инициализация библиотеки
-2. Настройки конфигурации  
-3. Извлечение линий
-4. Извлечение кругов
-5. Извлечение прямоугольников
-6. Извлечение путей
-7. Множественные элементы
-8. Полигоны
-9. Эллипсы
-10. Контроль плотности точек
-11. Обработка ошибок
-12. Пустые SVG
-13. Автоматический расчет плотности
-14. **SVG с растровыми изображениями**
+### Main tests: **14/14 ✅**
+1. Library initialization
+2. Configuration settings  
+3. Line extraction
+4. Circle extraction
+5. Rectangle extraction
+6. Path extraction
+7. Multiple elements
+8. Polygons
+9. Ellipses
+10. Point density control
+11. Error handling
+12. Empty SVGs
+13. Automatic density calculation
+14. **SVGs with raster images**
 
-### Новые тесты: **8/8 ✅**
-1. Извлечение метаданных
-2. Фильтрация элементов
-3. Утилитарные методы
-4. Нормализация координат
-5. Включение вершин прямоугольников
-6. Включение вершин полигонов
-7. Комплексные сценарии
-8. Производительность
+### New tests: **8/8 ✅**
+1. Metadata extraction
+2. Element filtering
+3. Utility methods
+4. Coordinate normalization
+5. Rectangle vertex inclusion
+6. Polygon vertex inclusion
+7. Complex scenarios
+8. Performance
 
-## 📦 **Файловая структура**
+## 📦 **File structure**
 
 ```
 📁 SVG Import library/
-├── 📄 svg-path-extractor.js      (24.1KB - основная библиотека)
-├── 📄 svg-path-extractor.min.js  (24.1KB - готова к CDN)
-├── 📄 index.d.ts                 (TypeScript определения)
-├── 📄 test-suite.js              (Полный набор тестов)
-├── 📄 standalone-demo.html       (Интерактивная демонстрация)
-├── 📄 README-STANDALONE.md       (Документация на русском)
-├── 📄 package.json               (NPM метаданные)
-├── 📄 CHANGELOG.md               (История изменений)
-└── 📁 examples/                  (Примеры использования)
+├── 📄 svg-path-extractor.js      (24.1KB - main library)
+├── 📄 svg-path-extractor.min.js  (24.1KB - CDN ready)
+├── 📄 index.d.ts                 (TypeScript definitions)
+├── 📄 test-suite.js              (Complete test suite)
+├── 📄 standalone-demo.html       (Interactive demonstration)
+├── 📄 README-STANDALONE.md       (English documentation)
+├── 📄 package.json               (NPM metadata)
+├── 📄 CHANGELOG.md               (Change history)
+└── 📁 examples/                  (Usage examples)
     ├── browser-example.html
     └── node-example.js
 ```
 
-## 🎯 **Ключевые преимущества**
+## 🎯 **Key advantages**
 
-### ✅ **Простота использования**
+### ✅ **Ease of use**
 ```javascript
-// Базовое использование
+// Basic usage
 const extractor = new SVGPathExtractor();
 const paths = await extractor.extractPoints(svgContent);
 
-// Расширенное использование  
+// Advanced usage  
 const metadata = await extractor.extractPointsWithMetadata(svgContent);
 const bbox = extractor.getBoundingBox(paths);
 ```
 
-### ✅ **Универсальная совместимость**
-- 🌐 **Браузеры**: Работает без зависимостей
-- 📦 **Node.js**: Опциональная поддержка xmldom
-- 📱 **CDN-готовность**: Один файл, никаких зависимостей
-- 🔧 **TypeScript**: Полные определения типов
+### ✅ **Universal compatibility**
+- 🌐 **Browsers**: Works without dependencies
+- 📦 **Node.js**: Optional xmldom support
+- 📱 **CDN-ready**: Single file, no dependencies
+- 🔧 **TypeScript**: Full type definitions
 
-### ✅ **Надежность**
-- Обработка всех типов SVG элементов
-- Корректная работа с повреждёнными файлами
-- Игнорирование неподдерживаемых элементов
-- Предупреждения о потенциальных проблемах
+### ✅ **Reliability**
+- Handles all SVG element types
+- Correct operation with damaged files
+- Ignores unsupported elements
+- Warnings about potential issues
 
-### ✅ **Производительность**
-- Оптимизированные алгоритмы
-- Минимальное потребление памяти
-- Быстрая обработка сложных SVG
-- Автоматический расчет оптимальной плотности
+### ✅ **Performance**
+- Optimized algorithms
+- Minimal memory consumption
+- Fast processing of complex SVGs
+- Automatic optimal density calculation
 
-## 🚀 **Готовность к публикации**
+## 🚀 **Publication readiness**
 
-### CDN готовность: ✅
-- Один файл без зависимостей
-- Современный ES6+ код
-- UMD совместимость
-- Размер: 24.1KB (приемлемо для CDN)
+### CDN readiness: ✅
+- Single file without dependencies
+- Modern ES6+ code
+- UMD compatibility
+- Size: 24.1KB (acceptable for CDN)
 
-### NPM готовность: ✅  
-- Полные метаданные в package.json
-- TypeScript определения
-- Примеры использования
-- Подробная документация
+### NPM readiness: ✅  
+- Complete metadata in package.json
+- TypeScript definitions
+- Usage examples
+- Detailed documentation
 
-### Документация: ✅
-- README на русском языке
-- Интерактивная демонстрация
-- Примеры кода для браузера и Node.js
-- Полный changelog
+### Documentation: ✅
+- English README
+- Interactive demonstration
+- Code examples for browser and Node.js
+- Complete changelog
 
 ---
 
-## 🎉 **Итог**
+## 🎉 **Summary**
 
-Библиотека **значительно улучшена** и готова к реальному использованию:
+The library has been **significantly improved** and is ready for real-world use:
 
-- ⬆️ **Функциональность**: +6 новых возможностей
-- 🐛 **Надежность**: +22 автоматических теста  
-- 📚 **Документация**: Полная русскоязычная документация
-- 🚀 **Готовность**: CDN и NPM публикация
-- 💡 **Простота**: Сохранена изначальная простота API
+- ⬆️ **Functionality**: +6 new capabilities
+- 🐛 **Reliability**: +22 automated tests  
+- 📚 **Documentation**: Complete English documentation
+- 🚀 **Readiness**: CDN and NPM publication
+- 💡 **Simplicity**: Original API simplicity preserved
 
-**Библиотека готова к продакшн использованию и публикации!** 🚀 
+**The library is ready for production use and publication!** 🚀 
